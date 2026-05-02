@@ -13,6 +13,7 @@ import {
   SheetContent,
   SheetHeader,
   SheetTitle,
+  SheetDescription,
   SheetTrigger,
 } from "@/components/ui/sheet";
 const navItems = [
@@ -26,7 +27,7 @@ export default function Navbar() {
   const pathname = usePathname();
 
   return (
-    <header className="fixed inset-x-0 top-0 z-50 border-b border-white/10 bg-background/85 backdrop-blur-xl">
+    <header className="fixed inset-x-0 top-0 z-50 border-b border-white/10 bg-background/55 backdrop-blur-xl">
       <nav className="mx-auto flex h-20 max-w-7xl items-center justify-between px-6 md:px-10 lg:px-16">
         {/* Logo */}
         <Link href="/" className="shrink-0">
@@ -90,6 +91,10 @@ export default function Navbar() {
               <SheetTitle className="sr-only">
                 Mobile Navigation Menu
               </SheetTitle>
+
+              <SheetDescription className="sr-only">
+                Browse pages like Home, Movies, TV Shows and Watchlist.
+              </SheetDescription>
             </SheetHeader>
 
             <div className="mb-8">
@@ -98,6 +103,7 @@ export default function Navbar() {
                 alt="Nextflix Logo"
                 width={120}
                 height={45}
+                className="w-auto"
               />
             </div>
 
