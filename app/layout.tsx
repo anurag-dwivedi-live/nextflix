@@ -5,6 +5,7 @@ import Navbar from "@/components/Navbar";
 import { cn } from "@/lib/utils";
 import Background from "@/components/Background";
 import { Toaster } from "@/components/ui/sonner";
+import NextTopLoader from "nextjs-toploader";
 
 const inter = Inter({ subsets: ["latin"], variable: "--font-sans" });
 
@@ -45,6 +46,7 @@ export default function RootLayout({
       <body>
         <Background />
         <Navbar />
+        <NextTopLoader color="#9f0712" height={2} showSpinner={false} />
         {children}
         <Toaster richColors position="top-center" />
       </body>

@@ -277,3 +277,12 @@ html {
 body {
   -ms-overflow-style: none;
 }
+
+/* Move top loader below navbar */
+#nprogress {
+  pointer-events: none;
+}
+
+#nprogress .bar {
+  top: 80px !important; /* navbar height = h-20 */
+}

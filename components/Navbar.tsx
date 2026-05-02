@@ -15,6 +15,7 @@ import {
   SheetTitle,
   SheetDescription,
   SheetTrigger,
+  SheetClose,
 } from "@/components/ui/sheet";
 const navItems = [
   { label: "Home", href: "/" },
@@ -112,31 +113,34 @@ export default function Navbar() {
                 const active = pathname === item.href;
 
                 return (
-                  <Link
-                    key={item.href}
-                    href={item.href}
-                    className={`block px-4 py-3 rounded-md text-sm font-medium transition-all ${
-                      active
-                        ? "bg-primary text-primary-foreground"
-                        : "text-foreground/75 hover:bg-white/5 hover:text-foreground"
-                    }`}
-                  >
-                    {item.label}
-                  </Link>
+                  <SheetClose key={item.href} asChild>
+                    <Link
+                      href={item.href}
+                      className={`block rounded-md px-4 py-3 text-sm font-medium transition-all ${
+                        active
+                          ? "bg-primary text-primary-foreground"
+                          : "text-foreground/75 hover:bg-white/5 hover:text-foreground"
+                      }`}
+                    >
+                      {item.label}
+                    </Link>
+                  </SheetClose>
                 );
               })}
             </div>
 
-            <a
-              href="https://github.com/anurag-dwivedi-live"
-              target="_blank"
-              rel="noopener noreferrer"
-              className="mt-8 flex items-center rounded justify-center bg-primary px-4 py-3 text-sm font-medium text-primary-foreground transition-all hover:bg-primary/90"
-            >
-              <FaGithub className="mr-2" />
-              GitHub
-              <GoArrowUpRight className="ml-2 text-lg" />
-            </a>
+            <SheetClose asChild>
+              <a
+                href="https://github.com/anurag-dwivedi-live"
+                target="_blank"
+                rel="noopener noreferrer"
+                className="mt-8 flex items-center rounded justify-center bg-primary px-4 py-3 text-sm font-medium text-primary-foreground transition-all hover:bg-primary/90"
+              >
+                <FaGithub className="mr-2" />
+                GitHub
+                <GoArrowUpRight className="ml-2 text-lg" />
+              </a>
+            </SheetClose>
           </SheetContent>
         </Sheet>
       </nav>
