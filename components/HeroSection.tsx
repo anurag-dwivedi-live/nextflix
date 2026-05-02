@@ -4,7 +4,6 @@ import { useEffect, useState } from "react";
 import Image from "next/image";
 import Link from "next/link";
 import { Info, Star } from "lucide-react";
-import { BsSave2Fill } from "react-icons/bs";
 
 import { Button } from "@/components/ui/button";
 import {
@@ -13,10 +12,9 @@ import {
   CarouselItem,
   CarouselApi,
 } from "@/components/ui/carousel";
+import WatchlistBtn from "./WatchlistBtn";
 
-// Hardcoded movie data for demonstration purposes.
-// In a real app, this would come from an API.
-// Since OMDB doesn't provide trending movies endpoint, so we are hardcoding it here
+// Mock data for featured movies
 const movies = [
   {
     id: "tt1160419",
@@ -139,14 +137,11 @@ export default function HeroSection() {
           </p>
 
           <div className="flex flex-wrap gap-4">
-            <Button className="p-4">
-              <BsSave2Fill className="mr-2 h-4 w-4 fill-white" />
-              Add to Watchlist
-            </Button>
+            <WatchlistBtn id={movie.id} title={movie.title} />
 
             <Link href={`/movie/${movie.id}`}>
               <Button variant="secondary" className="p-4">
-                <Info className="mr-2 h-4 w-4" />
+                <Info className="h-4 w-4" />
                 Details
               </Button>
             </Link>

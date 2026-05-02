@@ -211,7 +211,8 @@
   button {
     @apply cursor-pointer;
   }
-  button:not(:disabled), [role="button"]:not(:disabled) {
+  button:not(:disabled),
+  [role="button"]:not(:disabled) {
     cursor: pointer;
   }
 }
@@ -256,4 +257,23 @@
     -ms-overflow-style: none;
     scrollbar-width: none;
   }
+}
+
+/* ===================================================
+     NO SCROLLBAR
+  =================================================== */
+
+/* Hide scrollbar for Chrome, Safari, Edge */
+::-webkit-scrollbar {
+  display: none;
+}
+
+/* Hide scrollbar for Firefox */
+html {
+  scrollbar-width: none;
+}
+
+/* Hide scrollbar for IE / old Edge */
+body {
+  -ms-overflow-style: none;
 }
