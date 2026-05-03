@@ -8,9 +8,9 @@ function required(value: string | undefined, name: string) {
   return value;
 }
 
-export const OMDB_API_KEY = required(
-  process.env.NEXT_PUBLIC_OMDB_API_KEY,
-  "OMDB_API_KEY",
+export const TMDB_API_KEY = required(
+  process.env.NEXT_PUBLIC_TMDB_API_KEY,
+  "TMDB_API_KEY",
 );
 
 export const WATCHLIST_KEY = required(

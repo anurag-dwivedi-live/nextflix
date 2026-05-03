@@ -2,44 +2,36 @@
 
 import { useEffect, useState } from "react";
 import Link from "next/link";
-import { Heart, ArrowRightIcon } from "lucide-react";
+import { Heart, ArrowRightIcon, Trash2 } from "lucide-react";
 
 import { Button } from "@/components/ui/button";
-import MovieCard from "@/components/MovieCard";
 import MovieCardSkeleton from "@/components/CardSkeleton";
+import ConfirmDialog from "@/components/ConfirmDialog";
+
 import {
-  AlertDialog,
-  AlertDialogAction,
-  AlertDialogCancel,
-  AlertDialogContent,
-  AlertDialogDescription,
-  AlertDialogFooter,
-  AlertDialogHeader,
-  AlertDialogTitle,
-  AlertDialogTrigger,
-} from "@/components/ui/alert-dialog";
+  getWatchlist,
+  removeFromWatchlist,
+  clearWatchlist,
+} from "@/lib/watchlist";
+import { toast } from "sonner";
 
-import { WATCHLIST_KEY } from "@/lib/config";
-
-// Define the Movie type based on the expected API response
+// TMDB API returns a lot of data, but we only need a few fields for the watchlist page
 type Movie = {
-  imdbID: string;
-  Title: string;
-  Poster: string;
-  Year: string;
+  id: number;
+  title: string;
+  poster_path: string;
+  release_date: string;
 };
 
 export default function Watchlist() {
   const [movies, setMovies] = useState<Movie[]>([]);
   const [loading, setLoading] = useState(true);
 
-  // Load watchlist movies from localStorage and fetch their details from the API
+  // Load watchlist movies from localStorage and TMDB API
   async function loadWatchlist() {
     setLoading(true);
 
-    const ids: string[] = JSON.parse(
-      localStorage.getItem(WATCHLIST_KEY) || "[]",
-    );
+    const ids = getWatchlist();
 
     if (!ids.length) {
       setMovies([]);
@@ -47,29 +39,20 @@ export default function Watchlist() {
       return;
     }
 
-    // Fetch movie details for each ID in parallel
     try {
       const results = await Promise.all(
         ids.map(async (id) => {
           const res = await fetch(`/api/movies?id=${id}`);
 
-          if (!res.ok) {
-            throw new Error(`Failed to fetch movie data for ID: ${id}`);
-          }
+          if (!res.ok) throw new Error("Failed");
 
-          const data = await res.json();
-
-          if (data.Error) {
-            throw new Error(data.Error);
-          }
-
-          return data;
+          return res.json();
         }),
       );
 
       setMovies(results);
     } catch (error) {
-      console.error("Failed to load watchlist:", error);
+      console.error(error);
       setMovies([]);
     } finally {
       setLoading(false);
@@ -80,13 +63,23 @@ export default function Watchlist() {
     loadWatchlist();
   }, []);
 
-  // Clear the watchlist by removing the key from localStorage and updating state
-  function clearAll() {
-    localStorage.removeItem(WATCHLIST_KEY);
-    setMovies([]);
+  // Remove movie from watchlist and update state
+  function handleRemove(id: number, title: string) {
+    removeFromWatchlist(String(id));
+
+    setMovies((prev) => prev.filter((movie) => movie.id !== id));
+
+    toast.success(`${title} removed from watchlist`);
   }
 
-  // Render loading skeletons while fetching movie data
+  // Clear entire watchlist and update state
+  function clearAll() {
+    clearWatchlist();
+    setMovies([]);
+    toast.success("Watchlist cleared");
+  }
+
+  // Show loading skeletons while fetching movies
   if (loading) {
     return (
       <section className="mx-auto max-w-7xl px-6 py-28 md:px-10 lg:px-16">
@@ -107,46 +100,25 @@ export default function Watchlist() {
       <div className="mb-10 flex flex-col gap-4 md:flex-row md:items-center md:justify-between">
         <div>
           <h1 className="text-4xl font-bold">My Watchlist</h1>
-          <p className="mt-2 text-muted-foreground flex items-center">
-            <Heart
-              className="inline-block h-5 w-5 text-primary mr-2"
-              fill="currentColor"
-            />
-            <span>{movies.length} saved movies</span>
+
+          <p className="mt-2 flex items-center text-muted-foreground">
+            <Heart className="mr-2 h-5 w-5 text-primary" fill="currentColor" />
+            {movies.length} saved movies
           </p>
         </div>
 
+        {/* Clear All Button */}
         {movies.length > 0 && (
-          <AlertDialog>
-            <AlertDialogTrigger asChild>
-              <Button variant="destructive">Clear All</Button>
-            </AlertDialogTrigger>
-
-            <AlertDialogContent>
-              <AlertDialogHeader>
-                <AlertDialogTitle>Clear your watchlist?</AlertDialogTitle>
-
-                <AlertDialogDescription>
-                  This will remove all saved movies from your watchlist. This
-                  action cannot be undone.
-                </AlertDialogDescription>
-              </AlertDialogHeader>
-
-              <AlertDialogFooter>
-                <AlertDialogCancel>Cancel</AlertDialogCancel>
-
-                <AlertDialogAction
-                  onClick={clearAll}
-                  className="bg-destructive text-white hover:bg-destructive/90"
-                >
-                  Confirm
-                </AlertDialogAction>
-              </AlertDialogFooter>
-            </AlertDialogContent>
-          </AlertDialog>
+          <ConfirmDialog
+            title="Clear your watchlist?"
+            description="This will remove all saved movies permanently."
+            confirmText="Clear All"
+            onConfirm={clearAll}
+            trigger={<Button variant="destructive">Clear All</Button>}
+          />
         )}
       </div>
-      {/* Empty State */}
+
       {!movies.length ? (
         <div className="flex min-h-105 flex-col items-center justify-center rounded-3xl border bg-muted/30 text-center">
           <Heart className="mb-4 h-12 w-12 text-primary" fill="currentColor" />
@@ -158,22 +130,48 @@ export default function Watchlist() {
           </p>
 
           <Link href="/" className="mt-6">
-            <Button className="rounded px-4 py-5">
-              <span>Browse Movies</span>
-              <ArrowRightIcon className="inline-block h-5 w-5 text-foreground" />
+            <Button className="px-4 py-5">
+              Browse Movies
+              <ArrowRightIcon className="ml-2 h-5 w-5" />
             </Button>
           </Link>
         </div>
       ) : (
         <div className="grid grid-cols-2 gap-6 md:grid-cols-3 lg:grid-cols-5">
           {movies.map((movie) => (
-            <MovieCard
-              key={movie.imdbID}
-              id={movie.imdbID}
-              title={movie.Title}
-              year={movie.Year}
-              poster={movie.Poster}
-            />
+            <div key={movie.id} className="group">
+              <Link href={`/movie/${movie.id}`}>
+                <div className="overflow-hidden rounded-xl">
+                  <img
+                    src={
+                      movie.poster_path
+                        ? `https://image.tmdb.org/t/p/w500${movie.poster_path}`
+                        : "/no-poster.png"
+                    }
+                    alt={movie.title}
+                    className="h-72 w-full object-cover transition group-hover:scale-105"
+                  />
+                </div>
+
+                <p className="mt-3 text-center text-sm font-medium">
+                  {movie.title} ({movie.release_date?.slice(0, 4)})
+                </p>
+              </Link>
+
+              {/* Remove Movie Button */}
+              <ConfirmDialog
+                title="Remove movie?"
+                description={`Remove ${movie.title} from your watchlist?`}
+                confirmText="Remove"
+                onConfirm={() => handleRemove(movie.id, movie.title)}
+                trigger={
+                  <Button variant="outline" size="sm" className="mt-3 w-full">
+                    <Trash2 className="mr-2 h-4 w-4" />
+                    Remove
+                  </Button>
+                }
+              />
+            </div>
           ))}
         </div>
       )}

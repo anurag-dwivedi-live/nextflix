@@ -1,10 +1,17 @@
 import { WATCHLIST_KEY } from "./config";
 
-// This module manages the user's watchlist using localStorage. It provides functions to get the current watchlist, add an item to the watchlist, remove an item from the watchlist, and check if an item is in the watchlist.
-
-export function getWatchlist() {
+function parseWatchlist(): string[] {
   if (typeof window === "undefined") return [];
-  return JSON.parse(localStorage.getItem(WATCHLIST_KEY) || "[]");
+
+  try {
+    return JSON.parse(localStorage.getItem(WATCHLIST_KEY) || "[]");
+  } catch {
+    return [];
+  }
+}
+
+export function getWatchlist(): string[] {
+  return parseWatchlist();
 }
 
 export function addToWatchlist(id: string) {
@@ -16,8 +23,13 @@ export function addToWatchlist(id: string) {
 }
 
 export function removeFromWatchlist(id: string) {
-  const items = getWatchlist().filter((item: string) => item !== id);
-  localStorage.setItem(WATCHLIST_KEY, JSON.stringify(items));
+  const updated = getWatchlist().filter((item) => item !== id);
+
+  localStorage.setItem(WATCHLIST_KEY, JSON.stringify(updated));
+}
+
+export function clearWatchlist() {
+  localStorage.removeItem(WATCHLIST_KEY);
 }
 
 export function isInWatchlist(id: string) {

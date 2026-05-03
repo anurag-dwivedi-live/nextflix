@@ -28,7 +28,7 @@ A modern movie discovery web application built with **Next.js** that allows user
 * TypeScript
 * Tailwind CSS
 * Shadcn UI
-* OMDb API
+* TMDb API
 
 ---
 
@@ -82,9 +82,9 @@ http://localhost:3000
 
 ## API Used
 
-This project uses the **OMDb API**.
+This project uses the **TMDB API**.
 
-> This product uses the OMDb API but is not endorsed or certified by OMDb.
+> This product uses the TMDb API but is not endorsed or certified by TMDb.
 
 
 ---
