@@ -48,7 +48,13 @@ export default function RootLayout({
         <Navbar />
         <NextTopLoader color="#9f0712" height={2} showSpinner={false} />
         {children}
-        <Toaster richColors position="top-center" duration={2500} closeButton />
+        <Toaster
+          richColors
+          position="bottom-center"
+          mobileOffset={20}
+          duration={2500}
+          closeButton
+        />
       </body>
     </html>
   );
