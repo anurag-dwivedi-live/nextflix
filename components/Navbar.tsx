@@ -6,6 +6,7 @@ import { usePathname } from "next/navigation";
 import { FaGithub } from "react-icons/fa";
 import { GoArrowUpRight } from "react-icons/go";
 import { Menu } from "lucide-react";
+import { useEffect, useRef, useState } from "react";
 
 import { Button } from "@/components/ui/button";
 import {
@@ -27,8 +28,41 @@ const navItems = [
 export default function Navbar() {
   const pathname = usePathname();
 
+  const [showNavbar, setShowNavbar] = useState(true);
+  const lastScrollY = useRef(0);
+
+  // Hide navbar on scroll down and show on scroll up
+  useEffect(() => {
+    const handleScroll = () => {
+      const currentScrollY = window.scrollY;
+
+      // ignore tiny scrolls
+      if (Math.abs(currentScrollY - lastScrollY.current) < 10) return;
+
+      if (currentScrollY < 50) {
+        setShowNavbar(true);
+      } else if (currentScrollY > lastScrollY.current) {
+        // scrolling down
+        setShowNavbar(false);
+      } else {
+        // scrolling up
+        setShowNavbar(true);
+      }
+
+      lastScrollY.current = currentScrollY;
+    };
+
+    window.addEventListener("scroll", handleScroll);
+
+    return () => window.removeEventListener("scroll", handleScroll);
+  }, []);
+
   return (
-    <header className="fixed inset-x-0 top-0 z-50 border-b border-white/10 bg-background/5 backdrop-blur-sm">
+    <header
+      className={`fixed inset-x-0 top-0 z-50 transition-transform duration-300 ${
+        showNavbar ? "translate-y-0" : "-translate-y-full"
+      } border-b border-white/10 bg-background/35 backdrop-blur-2xl`}
+    >
       <nav className="mx-auto flex h-20 max-w-7xl items-center justify-between px-6 md:px-10 lg:px-16">
         {/* Logo */}
         <Link href="/" className="shrink-0">
