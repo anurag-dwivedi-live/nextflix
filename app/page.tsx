@@ -6,27 +6,36 @@ import CategorySection from "@/components/CategorySection";
 export default async function Home() {
   const baseUrl = getBaseUrl();
 
-  const res = await fetch(`${baseUrl}/api/featured`, {
+  const featuredRes = await fetch(`${baseUrl}/api/featured`, {
     next: { revalidate: 3600 },
   });
 
-  const data = await res.json();
+  const heroRes = await fetch(`${baseUrl}/api/hero`, {
+    next: { revalidate: 3600 },
+  });
+
+  const featuredData = await featuredRes.json();
+  const heroMovies = await heroRes.json();
 
   return (
     <main>
-      <HeroSection />
+      <HeroSection movies={heroMovies} />
+
       <CategorySection
         title="Movies"
         endpoint="/api/category?type=movie"
-        showGenres={true}
+        showGenres
       />
-      <FeaturedBanner movie={data.primary} />
+
+      <FeaturedBanner movie={featuredData.primary} />
+
       <CategorySection
         title="TV Shows"
         endpoint="/api/category?type=tv"
         showGenres={false}
       />
-      <FeaturedBanner movie={data.secondary} />
+
+      <FeaturedBanner movie={featuredData.secondary} />
     </main>
   );
 }

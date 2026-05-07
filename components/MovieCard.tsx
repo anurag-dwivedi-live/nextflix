@@ -18,11 +18,13 @@ export default function MovieCard({ id, title, year, poster }: Props) {
   return (
     <Link
       href={`/movie/${id}`}
-      className="group overflow-hidden transition hover:shadow-xl hover:text-foreground/80"
+      className="group block overflow-hidden transition"
     >
-      <div className="relative h-72 overflow-hidden rounded-md">
+      {/* Poster */}
+      <div className="relative h-72 overflow-hidden rounded-xl">
+        {/* Skeleton ONLY for image */}
         {!loaded && (
-          <Skeleton className="absolute inset-0 h-full w-full rounded-md" />
+          <Skeleton className="absolute inset-0 h-full w-full rounded-xl" />
         )}
 
         <Image
@@ -30,15 +32,22 @@ export default function MovieCard({ id, title, year, poster }: Props) {
           alt={title || "Movie Poster"}
           fill
           sizes="(max-width: 768px) 50vw, (max-width: 1200px) 33vw, 20vw"
-          onLoad={() => setLoaded(true)}
-          className={`rounded-md object-cover transition duration-500 group-hover:scale-105 ${
-            loaded ? "opacity-100" : "opacity-0"
+          onLoad={(e) => {
+            if (e.currentTarget.complete) {
+              setLoaded(true);
+            }
+          }}
+          className={`rounded-xl object-cover transition duration-500 group-hover:scale-105 ${
+            loaded ? "block" : "hidden"
           }`}
         />
       </div>
 
-      <div className="mt-3 text-center text-sm">
-        {title} ({year})
+      {/* Content ALWAYS visible */}
+      <div className="mt-3 text-center">
+        <h3 className="line-clamp-1 text-sm font-medium">{title}</h3>
+
+        <p className="mt-1 text-xs text-muted-foreground">{year}</p>
       </div>
     </Link>
   );
