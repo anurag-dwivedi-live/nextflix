@@ -79,7 +79,10 @@ export default function Navbar() {
         {/* Desktop Menu */}
         <ul className="hidden items-center gap-10 lg:flex">
           {navItems.map((item) => {
-            const active = pathname === item.href;
+            const active =
+              item.href === "/"
+                ? pathname === "/"
+                : pathname.startsWith(item.href);
 
             return (
               <li key={item.href}>
@@ -144,7 +147,10 @@ export default function Navbar() {
 
             <div className="space-y-3">
               {navItems.map((item) => {
-                const active = pathname === item.href;
+                const active =
+                  item.href === "/"
+                    ? pathname === "/"
+                    : pathname.startsWith(item.href);
 
                 return (
                   <SheetClose key={item.href} asChild>
