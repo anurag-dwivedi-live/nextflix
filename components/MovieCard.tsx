@@ -24,7 +24,7 @@ export default function MovieCard({
 
   return (
     <Link
-      href={`/${mediaType}/${id}`}
+      href={`/${mediaType === "movie" ? "movies" : "tv-shows"}/details/${id}`}
       className="group block overflow-hidden transition"
     >
       <div className="relative h-72 overflow-hidden rounded-xl bg-muted">

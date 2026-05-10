@@ -1,12 +1,13 @@
 "use client";
 
 import { useEffect, useState } from "react";
-import Link from "next/link";
-import { Heart, ArrowRightIcon, Trash2 } from "lucide-react";
+import { Heart, Trash2 } from "lucide-react";
 
 import { Button } from "@/components/ui/button";
 import MovieCardSkeleton from "@/components/CardSkeleton";
 import ConfirmDialog from "@/components/ConfirmDialog";
+import ExploreBtn from "@/components/ExploreBtn";
+import MovieCard from "@/components/MovieCard";
 
 import {
   getWatchlist,
@@ -15,25 +16,26 @@ import {
 } from "@/lib/watchlist";
 import { toast } from "sonner";
 
-// TMDB API returns a lot of data, but we only need a few fields for the watchlist page
-type Movie = {
+// Define the shape of media items in the watchlist
+type WatchlistMedia = {
   id: number;
-  title: string;
+  title?: string;
+  name?: string;
   poster_path: string;
-  release_date: string;
+  release_date?: string;
+  first_air_date?: string;
+  mediaType: "movie" | "tv";
 };
 
 export default function Watchlist() {
-  const [movies, setMovies] = useState<Movie[]>([]);
+  const [movies, setMovies] = useState<WatchlistMedia[]>([]);
   const [loading, setLoading] = useState(true);
 
-  // Load watchlist movies from localStorage and TMDB API
+  // Load watchlist items from localStorage and fetch their details from the API
   async function loadWatchlist() {
     setLoading(true);
-
-    const ids = getWatchlist();
-
-    if (!ids.length) {
+    const items = getWatchlist();
+    if (!items.length) {
       setMovies([]);
       setLoading(false);
       return;
@@ -41,12 +43,17 @@ export default function Watchlist() {
 
     try {
       const results = await Promise.all(
-        ids.map(async (id) => {
-          const res = await fetch(`/api/movies?id=${id}`);
+        items.map(async (item) => {
+          const res = await fetch(
+            `/api/details?id=${item.id}&type=${item.mediaType}`,
+          );
 
           if (!res.ok) throw new Error("Failed");
-
-          return res.json();
+          const data = await res.json();
+          return {
+            ...data,
+            mediaType: item.mediaType,
+          };
         }),
       );
 
@@ -64,11 +71,9 @@ export default function Watchlist() {
   }, []);
 
   // Remove movie from watchlist and update state
-  function handleRemove(id: number, title: string) {
-    removeFromWatchlist(String(id));
-
+  function handleRemove(id: number, title: string, mediaType: "movie" | "tv") {
+    removeFromWatchlist(String(id), mediaType);
     setMovies((prev) => prev.filter((movie) => movie.id !== id));
-
     toast.success(`${title} removed from watchlist`);
   }
 
@@ -103,7 +108,7 @@ export default function Watchlist() {
 
           <p className="mt-2 flex items-center text-muted-foreground">
             <Heart className="mr-2 h-5 w-5 text-primary" fill="currentColor" />
-            {movies.length} saved movies
+            {movies.length} saved content
           </p>
         </div>
 
@@ -111,7 +116,7 @@ export default function Watchlist() {
         {movies.length > 0 && (
           <ConfirmDialog
             title="Clear your watchlist?"
-            description="This will remove all saved movies permanently."
+            description="This will remove all saved content permanently."
             confirmText="Clear All"
             onConfirm={clearAll}
             trigger={<Button variant="destructive">Clear All</Button>}
@@ -122,48 +127,48 @@ export default function Watchlist() {
       {!movies.length ? (
         <div className="flex min-h-105 flex-col items-center justify-center rounded-3xl border bg-muted/30 text-center">
           <Heart className="mb-4 h-12 w-12 text-primary" fill="currentColor" />
-
-          <h2 className="text-2xl font-semibold">No movies in watchlist</h2>
-
+          <h2 className="text-2xl font-semibold">Your watchlist is empty</h2>
           <p className="mt-2 text-muted-foreground">
-            Start adding movies you love.
+            Save movies and TV shows to watch later.
           </p>
 
-          <Link href="/" className="mt-6">
-            <Button className="px-4 py-5">
-              Browse Movies
-              <ArrowRightIcon className="ml-2 h-5 w-5" />
-            </Button>
-          </Link>
+          <div className="mt-6">
+            <ExploreBtn text="Browse Titles" href="/" />
+          </div>
         </div>
       ) : (
         <div className="grid grid-cols-2 gap-6 md:grid-cols-3 lg:grid-cols-5">
           {movies.map((movie) => (
-            <div key={movie.id} className="group">
-              <Link href={`/movie/${movie.id}`}>
-                <div className="overflow-hidden rounded-xl">
-                  <img
-                    src={
-                      movie.poster_path
-                        ? `https://image.tmdb.org/t/p/w500${movie.poster_path}`
-                        : "/no-poster.png"
-                    }
-                    alt={movie.title}
-                    className="h-72 w-full object-cover transition group-hover:scale-105"
-                  />
-                </div>
+            <div key={movie.id}>
+              <MovieCard
+                id={String(movie.id)}
+                title={movie.title || movie.name || "Untitled"}
+                year={
+                  movie.release_date?.slice(0, 4) ||
+                  movie.first_air_date?.slice(0, 4) ||
+                  "N/A"
+                }
+                poster={
+                  movie.poster_path
+                    ? `https://image.tmdb.org/t/p/w500${movie.poster_path}`
+                    : "/no-poster.png"
+                }
+                mediaType={movie.mediaType}
+              />
 
-                <p className="mt-3 text-center text-sm font-medium">
-                  {movie.title} ({movie.release_date?.slice(0, 4)})
-                </p>
-              </Link>
-
-              {/* Remove Movie Button */}
               <ConfirmDialog
-                title="Remove movie?"
-                description={`Remove ${movie.title} from your watchlist?`}
+                title="Remove from watchlist?"
+                description={`Remove ${
+                  movie.title || movie.name
+                } from your watchlist?`}
                 confirmText="Remove"
-                onConfirm={() => handleRemove(movie.id, movie.title)}
+                onConfirm={() =>
+                  handleRemove(
+                    movie.id,
+                    movie.title || movie.name || "Untitled",
+                    movie.mediaType,
+                  )
+                }
                 trigger={
                   <Button variant="outline" size="sm" className="mt-3 w-full">
                     <Trash2 className="mr-2 h-4 w-4" />

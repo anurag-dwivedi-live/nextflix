@@ -1,23 +1,25 @@
 "use client";
 
 import Image from "next/image";
-import Link from "next/link";
-import { Info, Star } from "lucide-react";
+import { Star } from "lucide-react";
 
-import { Button } from "@/components/ui/button";
 import WatchlistBtn from "./WatchlistBtn";
+import CinematicButton from "./ExploreBtn";
 
-type Movie = {
+type Media = {
   id: number;
-  title: string;
+  title?: string;
+  name?: string;
   vote_average: number;
   overview: string;
   backdrop_path: string;
-  release_date: string;
+  release_date?: string;
+  first_air_date?: string;
+  mediaType?: "movie" | "tv";
 };
 
 type Props = {
-  movie: Movie;
+  movie: Media;
   badge?: string;
   showDots?: boolean;
   total?: number;
@@ -42,7 +44,7 @@ export default function CinematicBanner({
             ? `https://image.tmdb.org/t/p/original${movie.backdrop_path}`
             : "/no-poster.png"
         }
-        alt={movie.title}
+        alt={movie.title || movie.name || "Untitled"}
         fill
         priority
         sizes="100vw"
@@ -68,7 +70,7 @@ export default function CinematicBanner({
 
           {/* Title */}
           <h1 className="text-4xl font-bold leading-tight md:text-7xl">
-            {movie.title}
+            {movie.title || movie.name}
           </h1>
 
           {/* Rating */}
@@ -80,7 +82,8 @@ export default function CinematicBanner({
             </div>
 
             <span className="text-white/70">
-              {movie.release_date?.slice(0, 4)}
+              {movie.release_date?.slice(0, 4) ||
+                movie.first_air_date?.slice(0, 4)}
             </span>
           </div>
 
@@ -91,14 +94,17 @@ export default function CinematicBanner({
 
           {/* Buttons */}
           <div className="mt-6 flex flex-wrap gap-4">
-            <WatchlistBtn id={String(movie.id)} title={movie.title} />
+            <WatchlistBtn
+              id={String(movie.id)}
+              title={movie.title || movie.name || "Untitled"}
+              mediaType={movie.mediaType || "movie"}
+            />
 
-            <Link href={`/movie/${movie.id}`}>
-              <Button variant="secondary">
-                <Info className="mr-2 h-4 w-4" />
-                Details
-              </Button>
-            </Link>
+            <CinematicButton
+              href={`/${
+                movie.mediaType === "tv" ? "tv-shows" : "movies"
+              }/details/${movie.id}`}
+            />
           </div>
 
           {/* Optional Dots */}

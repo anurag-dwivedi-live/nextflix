@@ -1,11 +1,11 @@
 import type { Metadata } from "next";
 import { Geist, Geist_Mono, Inter } from "next/font/google";
-import "./globals.css";
-import Navbar from "@/components/Navbar";
 import { cn } from "@/lib/utils";
+import "./globals.css";
+
+import Navbar from "@/components/Navbar";
 import Background from "@/components/Background";
 import { Toaster } from "@/components/ui/sonner";
-import NextTopLoader from "nextjs-toploader";
 import Footer from "@/components/Footer";
 
 const inter = Inter({ subsets: ["latin"], variable: "--font-sans" });
@@ -47,7 +47,6 @@ export default function RootLayout({
       <body>
         <Background />
         <Navbar />
-        <NextTopLoader color="#9f0712" height={2} showSpinner={false} />
         {children}
         <Footer />
         <Toaster

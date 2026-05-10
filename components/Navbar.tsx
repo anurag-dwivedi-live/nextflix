@@ -7,6 +7,7 @@ import { FaGithub } from "react-icons/fa";
 import { GoArrowUpRight } from "react-icons/go";
 import { Menu } from "lucide-react";
 import { useEffect, useRef, useState } from "react";
+import NextTopLoader from "nextjs-toploader";
 
 import { Button } from "@/components/ui/button";
 import {
@@ -18,6 +19,8 @@ import {
   SheetTrigger,
   SheetClose,
 } from "@/components/ui/sheet";
+
+// Define navigation items with label and href
 const navItems = [
   { label: "Home", href: "/" },
   { label: "Movies", href: "/movies" },
@@ -57,12 +60,28 @@ export default function Navbar() {
     return () => window.removeEventListener("scroll", handleScroll);
   }, []);
 
+  // Prevent body scroll when navbar is hidden (mobile menu open)
+  useEffect(() => {
+    document.body.classList.toggle("navbar-hidden", !showNavbar);
+  }, [showNavbar]);
+
   return (
     <header
       className={`fixed inset-x-0 top-0 z-50 transition-transform duration-300 ${
         showNavbar ? "translate-y-0" : "-translate-y-full"
       } border-b border-white/10 bg-background/35 backdrop-blur-2xl`}
     >
+      <NextTopLoader
+        color="#9f0712"
+        height={2}
+        showSpinner={false}
+        crawlSpeed={120}
+        easing="ease"
+        speed={200}
+        shadow={false}
+        showAtBottom={false}
+        zIndex={9999}
+      />
       <nav className="mx-auto flex h-20 max-w-7xl items-center justify-between px-6 md:px-10 lg:px-16">
         {/* Logo */}
         <Link href="/" className="shrink-0">

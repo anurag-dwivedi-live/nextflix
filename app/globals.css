@@ -284,5 +284,14 @@ body {
 }
 
 #nprogress .bar {
-  top: 80px !important; /* navbar height = h-20 */
+  top: 80px !important;
+  transition: top 0.3s ease;
+}
+
+body.navbar-hidden #nprogress .bar {
+  top: 0 !important;
+}
+
+.theater-mode header {
+  display: none;
 }

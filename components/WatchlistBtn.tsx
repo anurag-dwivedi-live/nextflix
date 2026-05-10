@@ -11,29 +11,38 @@ import {
   isInWatchlist,
 } from "@/lib/watchlist";
 
-export default function WatchlistBtn(movie: { id: string; title: string }) {
+type Props = {
+  id: string;
+  title: string;
+  mediaType: "movie" | "tv";
+};
+
+export default function WatchlistBtn({ id, title, mediaType }: Props) {
   const [saved, setSaved] = useState(false);
 
+  // Check if the item is already in the watchlist when the component mounts
   useEffect(() => {
-    setSaved(isInWatchlist(movie.id));
-  }, [movie.id]);
+    setSaved(isInWatchlist(id, mediaType));
+  }, [id, mediaType]);
 
+  // Handle adding/removing from watchlist
   const handleWatchlist = () => {
     if (saved) {
-      removeFromWatchlist(movie.id);
+      removeFromWatchlist(id, mediaType);
       setSaved(false);
-
-      toast.success(`${movie.title} removed from watchlist`);
+      toast.success(`${title} removed from watchlist`);
     } else {
-      addToWatchlist(movie.id);
+      addToWatchlist({ id, title, mediaType });
       setSaved(true);
-
-      toast.success(`${movie.title} added to watchlist`);
+      toast.success(`${title} added to watchlist`);
     }
   };
 
   return (
-    <Button onClick={handleWatchlist} className="p-4">
+    <Button
+      onClick={handleWatchlist}
+      className="rounded-full border border-white/20 bg-white/10 px-8 py-6 text-sm font-semibold text-white backdrop-blur-md transition hover:bg-white/20"
+    >
       {saved ? (
         <FaBookmark className="h-4 w-4" />
       ) : (
