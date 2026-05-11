@@ -8,6 +8,7 @@ import { GoArrowUpRight } from "react-icons/go";
 import { Menu } from "lucide-react";
 import { useEffect, useRef, useState } from "react";
 import NextTopLoader from "nextjs-toploader";
+import SearchDialog from "./SearchDialog";
 
 import { Button } from "@/components/ui/button";
 import {
@@ -120,88 +121,97 @@ export default function Navbar() {
           })}
         </ul>
 
-        {/* Desktop CTA */}
-        <a
-          href="https://github.com/anurag-dwivedi-live"
-          target="_blank"
-          rel="noopener noreferrer"
-          className="hidden items-center rounded bg-primary px-4 py-2 text-sm font-medium text-primary-foreground transition-all duration-300 hover:bg-primary/90 lg:flex"
-        >
-          <FaGithub className="mr-2 text-base" />
-          GitHub
-          <GoArrowUpRight className="ml-2 text-lg" />
-        </a>
+        {/* Right Actions */}
+        <div className="flex items-center gap-2 lg:gap-3">
+          <SearchDialog />
 
-        {/* Mobile Menu */}
-        <Sheet>
-          <SheetTrigger asChild className="lg:hidden">
-            <Button variant="ghost" size="icon">
-              <Menu className="h-6 w-6" />
-            </Button>
-          </SheetTrigger>
+          {/* Desktop Actions */}
+          <div className="hidden items-center gap-3 lg:flex">
+            <a
+              href="https://github.com/anurag-dwivedi-live"
+              target="_blank"
+              rel="noopener noreferrer"
+              className="flex items-center rounded bg-primary px-4 py-2 text-sm font-medium text-primary-foreground transition-all duration-300 hover:bg-primary/90"
+            >
+              <FaGithub className="mr-2 text-base" />
+              GitHub
+              <GoArrowUpRight className="ml-2 text-lg" />
+            </a>
+          </div>
 
-          <SheetContent
-            side="right"
-            className="border-l border-white/10 bg-background p-6"
-          >
-            <SheetHeader>
-              <SheetTitle className="sr-only">
-                Mobile Navigation Menu
-              </SheetTitle>
+          {/* Mobile Menu */}
+          <div className="lg:hidden">
+            <Sheet>
+              <SheetTrigger asChild>
+                <Button variant="ghost" size="icon">
+                  <Menu className="h-6 w-6" />
+                </Button>
+              </SheetTrigger>
 
-              <SheetDescription className="sr-only">
-                Browse pages like Home, Movies, TV Shows and Watchlist.
-              </SheetDescription>
-            </SheetHeader>
-
-            <div className="mb-8">
-              <Image
-                src="/logo.png"
-                alt="Nextflix Logo"
-                width={120}
-                height={45}
-                className="w-auto"
-              />
-            </div>
-
-            <div className="space-y-3">
-              {navItems.map((item) => {
-                const active =
-                  item.href === "/"
-                    ? pathname === "/"
-                    : pathname.startsWith(item.href);
-
-                return (
-                  <SheetClose key={item.href} asChild>
-                    <Link
-                      href={item.href}
-                      className={`block rounded-md px-4 py-3 text-sm font-medium transition-all ${
-                        active
-                          ? "bg-primary text-primary-foreground"
-                          : "text-foreground/75 hover:bg-white/5 hover:text-foreground"
-                      }`}
-                    >
-                      {item.label}
-                    </Link>
-                  </SheetClose>
-                );
-              })}
-            </div>
-
-            <SheetClose asChild>
-              <a
-                href="https://github.com/anurag-dwivedi-live"
-                target="_blank"
-                rel="noopener noreferrer"
-                className="mt-8 flex items-center rounded justify-center bg-primary px-4 py-3 text-sm font-medium text-primary-foreground transition-all hover:bg-primary/90"
+              <SheetContent
+                side="right"
+                className="border-l border-white/10 bg-background p-6"
               >
-                <FaGithub className="mr-2" />
-                GitHub
-                <GoArrowUpRight className="ml-2 text-lg" />
-              </a>
-            </SheetClose>
-          </SheetContent>
-        </Sheet>
+                <SheetHeader>
+                  <SheetTitle className="sr-only">
+                    Mobile Navigation Menu
+                  </SheetTitle>
+
+                  <SheetDescription className="sr-only">
+                    Browse pages like Home, Movies, TV Shows and Watchlist.
+                  </SheetDescription>
+                </SheetHeader>
+
+                <div className="mb-8">
+                  <Image
+                    src="/logo.png"
+                    alt="Nextflix Logo"
+                    width={120}
+                    height={45}
+                    className="w-auto"
+                  />
+                </div>
+
+                <div className="space-y-3">
+                  {navItems.map((item) => {
+                    const active =
+                      item.href === "/"
+                        ? pathname === "/"
+                        : pathname.startsWith(item.href);
+
+                    return (
+                      <SheetClose key={item.href} asChild>
+                        <Link
+                          href={item.href}
+                          className={`block rounded-md px-4 py-3 text-sm font-medium transition-all ${
+                            active
+                              ? "bg-primary text-primary-foreground"
+                              : "text-foreground/75 hover:bg-white/5 hover:text-foreground"
+                          }`}
+                        >
+                          {item.label}
+                        </Link>
+                      </SheetClose>
+                    );
+                  })}
+                </div>
+
+                <SheetClose asChild>
+                  <a
+                    href="https://github.com/anurag-dwivedi-live"
+                    target="_blank"
+                    rel="noopener noreferrer"
+                    className="mt-8 flex items-center justify-center rounded bg-primary px-4 py-3 text-sm font-medium text-primary-foreground transition-all hover:bg-primary/90"
+                  >
+                    <FaGithub className="mr-2" />
+                    GitHub
+                    <GoArrowUpRight className="ml-2 text-lg" />
+                  </a>
+                </SheetClose>
+              </SheetContent>
+            </Sheet>
+          </div>
+        </div>
       </nav>
     </header>
   );

@@ -49,7 +49,7 @@ export default function WatchNowBtn({ id, type, title }: Props) {
       {/* Trigger */}
       <button
         onClick={() => setOpen(true)}
-        className="rounded-full bg-white px-8 py-3 text-sm font-semibold text-black transition hover:bg-white/90"
+        className="inline-flex items-center justify-center rounded-full bg-white px-8 py-3 text-sm font-semibold text-black transition hover:bg-white/90"
       >
         <Play className="mr-2 h-4 w-4" />
         Watch Now
